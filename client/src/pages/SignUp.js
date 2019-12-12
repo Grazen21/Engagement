@@ -14,23 +14,55 @@ import {
 import { useHistory } from "react-router-dom";
 
 const SignUp = props => {
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
   const [usernameValid /*, setusernameValid*/] = useState(true);
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [signupData, setSignupData] = useState({
+    name:[""],
+    username:[""],
+    password:[""],
+    email:[""]
+  });
   const history = useHistory();
 
+  let name = signupData.name[0];
+  let username = signupData.username[0];
+  let password = signupData.password[0];
+  let email = signupData.email[0];
+
+  const validateEmail = email => {
+    var re = /^(([^<>()[\]\\.,;:\s@0"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(\.))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  };
+
+  const validatePasswordLength = password => {
+      var re = /^[A-Za-z\d@$!%*?&]{6,}$/;
+      return re.test(password);
+  };
+
+  const validatePasswordLowercaseLetter = password => {
+    var re = /^(?=.*[a-z])[A-Za-z\d@$!%*?&]{6,}$/;
+    return re.test(password);
+  };
+
+  const validatePasswordUppercaseLetter = password => {
+    var re = /^(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d@$!%*?&]{6,}$/;
+    return re.test(password);
+  };
+
+  const validatePasswordNumber = password => {
+    var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,}$/;
+    return re.test(password);
+  };
+
+  const validatePasswordSpecialCharacter = password => {
+    var re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    return re.test(password);
+  };
+
   const handleInput = e => {
-    if (e.target.name === "name") {
-      setName(e.target.value);
-    } else if (e.target.name === "username") {
-      setUsername(e.target.value);
-    } else if (e.target.name === "password") {
-      setPassword(e.target.value);
-    } else if (e.target.name === "email") {
-      setEmail(e.target.value);
-    }
+    setSignupData({
+      ...signupData,
+      [e.target.name]: [e.target.value]
+    })
   };
 
   const handleSubmit = e => {
@@ -73,15 +105,15 @@ const SignUp = props => {
                           ? { valid: true }
                           : { invalid: true }
                         : name.length > 0
-                        ? { invalid: true }
-                        : "")}
+                          ? { invalid: true }
+                          : "")}
                     />
                   </FormGroup>
                   <FormGroup>
                     <Input
                       type="text"
                       name="username"
-                      placeholder="Username (min 6 characters)"
+                      placeholder="Username"
                       value={username}
                       onChange={e => {
                         handleInput(e);
@@ -91,15 +123,15 @@ const SignUp = props => {
                           ? { valid: true }
                           : { invalid: true }
                         : username.length > 0
-                        ? { invalid: true }
-                        : "")}
+                          ? { invalid: true }
+                          : "")}
                     />
                     <FormFeedback
                       {...(username.length > 0 && username.length >= 6
                         ? usernameValid
                           ? { valid: true }
-                          : { invalid: "true" }
-                        : { invalid: "true" })}
+                          : { invalid: true }
+                        : { invalid: true })}
                     >
                       {username.length >= 6
                         ? usernameValid
@@ -113,15 +145,49 @@ const SignUp = props => {
                     <Input
                       type="password"
                       name="password"
-                      placeholder="Password (min 6 characters)"
+                      placeholder="New Password"
                       value={password}
                       onChange={handleInput}
-                      {...(password.length >= 6
-                        ? { valid: true }
-                        : password.length > 0
-                        ? { invalid: true }
-                        : "")}
+                      {...(password.length === 0
+                        ? ""
+                        : validatePasswordLength(password)
+                        ? validatePasswordLowercaseLetter(password)
+                          ? validatePasswordUppercaseLetter(password)
+                            ? validatePasswordNumber(password)
+                              ? validatePasswordSpecialCharacter(password)
+                                ? { valid: true }
+                                : { invalid: true }
+                              : { invalid: true }
+                            : { invalid:true }
+                          : { invalid: true }
+                        : { invalid: true })}
                     />
+                    <FormFeedback
+                      {...(validatePasswordLength(password)
+                          ? validatePasswordLowercaseLetter(password)
+                            ? validatePasswordUppercaseLetter(password)
+                              ? validatePasswordNumber(password)
+                                ? validatePasswordSpecialCharacter(password)
+                                  ? { valid: true }
+                                  : { invalid: true }
+                                : { invalid: true }
+                              : { invalid:true }
+                            : { invalid: true }
+                          : { invalid: true })}
+                    >
+                      {validatePasswordLength(password)
+                          ? validatePasswordLowercaseLetter(password)
+                            ? validatePasswordUppercaseLetter(password)
+                              ? validatePasswordNumber(password)
+                                ? validatePasswordSpecialCharacter(password)
+                                  ? ""
+                                  : "Must be minimum 1 special character"
+                                : "Must be minimum 1 number"
+                              : "Must be minimum 1 uppercase letter"
+                            : "Must be minimum 1 lowercase letter"
+                          : "Must be minimum 6 characters"
+                      }
+                    </FormFeedback>
                   </FormGroup>
 
                   <FormGroup>
@@ -134,9 +200,18 @@ const SignUp = props => {
                       {...(email.length === 0
                         ? ""
                         : validateEmail(email)
-                        ? { valid: true }
-                        : { invalid: true })}
+                          ? { valid: true }
+                          : { invalid: true })}
                     />
+                    <FormFeedback
+                      {...(validateEmail(email)
+                          ? { valid: true }
+                          : { invalid: true })}
+                    >
+                      {validateEmail(email)
+                          ? ""
+                          : "Invalid email address"}
+                    </FormFeedback>
                   </FormGroup>
                   <Button
                     disabled={
@@ -166,7 +241,4 @@ const SignUp = props => {
 
 export default SignUp;
 
-const validateEmail = email => {
-  var re = /^(([^<>()[\]\\.,;:\s@0"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(\.))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(email);
-};
+

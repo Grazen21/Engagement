@@ -47,11 +47,12 @@ const MyCreateSession = props => {
     }
   });
 
-  const handleInput = e =>
+  const handleInput = e => {
     setSessionData({
       ...sessionData,
       [e.target.name]: [e.target.value]
-    });
+    })
+  };
 
   return (
     <>
