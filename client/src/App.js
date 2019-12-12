@@ -25,6 +25,7 @@ const App = () => {
         })
         .then(result => {
           setUser(result.data);
+          history.push("/dashboard");
         })
         .catch(error => {
           console.log(error);
