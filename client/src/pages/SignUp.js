@@ -9,7 +9,8 @@ import {
   FormGroup,
   Button,
   Input,
-  FormFeedback
+  FormFeedback,
+  Alert
 } from "reactstrap";
 import { useHistory } from "react-router-dom";
 
@@ -76,7 +77,7 @@ const SignUp = props => {
       },
       success => {
         if (success) {
-          alert("loggin success");
+          console.log("loggin success");
         }
       }
     );
@@ -84,6 +85,17 @@ const SignUp = props => {
 
   return (
     <>
+      { props.signUpFail
+          ? 
+          <>
+            <div>
+              <Alert color="danger">
+                Sign up unsuccessful, please fulfill the requirements.
+              </Alert>
+            </div> 
+          </>
+          : ""
+      }
       <Container className="middle-screen dark body-pattern">
         <Row className="no-margin no-padding">
           <Col>
