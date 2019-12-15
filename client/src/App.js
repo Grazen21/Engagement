@@ -11,6 +11,7 @@ import "./css/app.css";
 const App = () => {
   const [user, setUser] = useState([]);
   const [loggedIn, setloggedIn] = useState(false);
+  const [signUpFail, setSignUpFail] = useState(false);
   const history = useHistory();
   const checkLoggedinApi = process.env.REACT_APP_CHECK_LOGGEDIN_API;
   const signUpApi = process.env.REACT_APP_SIGN_UP;
@@ -47,7 +48,8 @@ const App = () => {
         history.push("/dashboard");
       })
       .catch(error => {
-        alert(error.response.data.message);
+        console.log(error.response.data.message);
+        setSignUpFail(true);
       });
   };
 
@@ -82,7 +84,7 @@ const App = () => {
         ; }} />
         <Route
           path="/signup"
-          render={() => <SignUp signUpUser={signUpUser} />}
+          render={() => <SignUp signUpUser={signUpUser} signUpFail={signUpFail}/>}
         />
         <Route path="/signin" render={() => <SignIn loginUser={loginUser} />} />
         <Route
